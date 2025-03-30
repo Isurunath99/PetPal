@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		AFC10FCF2D9983F500E217F2 /* Appwrite in Frameworks */ = {isa = PBXBuildFile; productRef = AFC10FCE2D9983F500E217F2 /* Appwrite */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		AFC10F442D99157800E217F2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AFC10FCF2D9983F500E217F2 /* Appwrite in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +117,7 @@
 			);
 			name = PetPal;
 			packageProductDependencies = (
+				AFC10FCE2D9983F500E217F2 /* Appwrite */,
 			);
 			productName = PetPal;
 			productReference = AFC10F332D99157600E217F2 /* PetPal.app */;
@@ -195,6 +201,9 @@
 			);
 			mainGroup = AFC10F2A2D99157600E217F2;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				AFC10F7D2D99707B00E217F2 /* XCRemoteSwiftPackageReference "sdk-for-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = AFC10F342D99157600E217F2 /* Products */;
 			projectDirPath = "";
@@ -558,6 +567,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		AFC10F7D2D99707B00E217F2 /* XCRemoteSwiftPackageReference "sdk-for-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/appwrite/sdk-for-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		AFC10FCE2D9983F500E217F2 /* Appwrite */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AFC10F7D2D99707B00E217F2 /* XCRemoteSwiftPackageReference "sdk-for-swift" */;
+			productName = Appwrite;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = AFC10F2B2D99157600E217F2 /* Project object */;
 }
