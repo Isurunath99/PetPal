@@ -32,4 +32,5 @@ struct AppColors {
     static let secondary = Color(hex: "#33FF57")
     static let background = Color(hex: "#1E1E1E")
     static let border = Color(hex: "#9CA3AF")
+    static let lightBlue = Color(hex: "#7DB4FA")
 }

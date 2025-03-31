@@ -9,8 +9,10 @@ import SwiftUI
 import LocalAuthentication
 
 struct SignUpView: View {
-    @Environment(\.presentationMode) var presentationMode
-    
+    @Binding var navPath: NavigationPath
+    @EnvironmentObject var authManager: AuthManager
+    @State private var isLoading: Bool = false
+
     @State private var firstName: String = ""
     @State private var lastName: String = ""
     @State private var email: String = ""
@@ -36,7 +38,7 @@ struct SignUpView: View {
                 VStack {
                     HStack {
                         Button(action: {
-                            presentationMode.wrappedValue.dismiss()
+                            navPath.removeLast()
                         }) {
                             HStack {
                                 Image(systemName: "arrow.left")
@@ -214,7 +216,7 @@ struct SignUpView: View {
                         }
                         
                         // Biometric Authentication Option
-//                        if biometricType == .faceID {
+                        if biometricType == .faceID {
                             Button(action: {
                                 enableBiometrics.toggle()
                             }) {
@@ -257,20 +259,27 @@ struct SignUpView: View {
                             }
                             .buttonStyle(PlainButtonStyle())
                             .padding(.top, 8)
-//                        }
+                        }
                         
                         // Sign Up Button
                         Button(action: handleSignUp) {
-                            Text("Sign Up")
-                                .font(.headline)
-                                .fontWeight(.bold)
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color(AppColors.primary))
-                                .cornerRadius(8)
+                            if isLoading {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                    .scaleEffect(1.0)
+                            } else {
+                                Text("Sign Up")
+                                    .font(.headline)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.white)
+                            }
+                           
                         }
                         .padding(.top, 8)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color(AppColors.primary))
+                        .cornerRadius(8)
                         
                         // Already Have Account
                         HStack {
@@ -279,6 +288,7 @@ struct SignUpView: View {
                             
                             Button(action: {
                                 // Navigate to sign in
+                                navPath.removeLast()
                             }) {
                                 Text("Sign In")
                                     .fontWeight(.medium)
@@ -369,6 +379,8 @@ struct SignUpView: View {
         }
         
         if isValid {
+            isLoading = true
+            
             // Prepare the sign-up request
             let signUpRequest = SignUpRequest(
                 firstName: firstName,
@@ -379,16 +391,24 @@ struct SignUpView: View {
                 enableBiometrics: enableBiometrics
             )
             
-            // Log the request (in a real app, this would be sent to the server)
-            print("Sign up request:", signUpRequest)
-            
-            // Navigate to next screen or show success
+            // Call the AuthManager to handle Firebase authentication
+            authManager.signUp(with: signUpRequest) { success, error in
+                isLoading = false
+                
+                if success {
+                    // Navigate back to sign in screen
+                    navPath.removeLast()
+                } else if let error = error {
+                    // Display the appropriate error
+                    if error.contains("email") {
+                        emailError = error
+                    } else if error.contains("password") {
+                        passwordError = error
+                    } else {
+                        authManager.authError = error
+                    }
+                }
+            }
         }
-    }
-}
-
-struct SignUpView_Previews: PreviewProvider {
-    static var previews: some View {
-        SignUpView()
     }
 }

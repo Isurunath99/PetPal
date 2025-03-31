@@ -9,6 +9,10 @@ import SwiftUI
 import LocalAuthentication
 
 struct SignInView: View {
+    @Binding var navPath: NavigationPath
+    @State private var isLoading: Bool = false
+    @EnvironmentObject var authManager: AuthManager
+    
     @State private var email: String = ""
     @State private var password: String = ""
     @State private var showPassword: Bool = false
@@ -18,7 +22,6 @@ struct SignInView: View {
     @State private var biometricType: BiometricType = .faceID
     @State private var biometricsEnabled: Bool = false
     @State private var biometricsAvailable: Bool = false
-    @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
         VStack(spacing: 0) {
@@ -184,7 +187,7 @@ struct SignInView: View {
                     .padding(.horizontal)
                     
                     // Biometric Auth
-//                    if biometricsAvailable && biometricsEnabled {
+                    if biometricsAvailable && biometricsEnabled {
                         Button(action: authenticateWithBiometrics) {
                             HStack {
                                 Image(systemName: biometricType == .faceID ? "faceid" : "touchid")
@@ -206,7 +209,7 @@ struct SignInView: View {
                         }
                         .padding(.horizontal)
                         .padding(.bottom, 8)
-//                    }
+                    }
                     
                     Spacer()
                     
@@ -217,6 +220,7 @@ struct SignInView: View {
                         
                         Button(action: {
                             // Navigate to signup
+                            navPath.append(Route.signUp)
                         }) {
                             Text("Sign Up")
                                 .fontWeight(.medium)
@@ -283,10 +287,32 @@ struct SignInView: View {
         }
         
         if isValid {
-            // Authenticate user with email/password
-            print("Signing in with email: \(email)")
-            // Navigate to app home on success
-        }
+                    isLoading = true
+                    
+                    let request = SignInRequest(
+                        email: email,
+                        password: password,
+                        rememberMe: rememberMe
+                    )
+                    
+                    authManager.signIn(with: request) { success, error in
+                        isLoading = false
+                        
+                        if success {
+                            // Successfully signed in
+                            // The auth state listener in AuthManager will update isAuthenticated
+                            // and trigger a navigation to the main app
+                            navPath.removeLast()
+                        } else if let error = error {
+                            // Show error to user
+                            if error.contains("email") {
+                                emailError = error
+                            } else if error.contains("password") {
+                                passwordError = error
+                            }
+                        }
+                    }
+                }
     }
     
     private func authenticateWithBiometrics() {
@@ -320,8 +346,3 @@ struct SignInView: View {
     }
 }
 
-struct SignInView_Previews: PreviewProvider {
-    static var previews: some View {
-        SignInView()
-    }
-}

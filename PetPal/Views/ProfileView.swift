@@ -9,7 +9,8 @@ import SwiftUI
 import LocalAuthentication
 
 struct ProfileView: View {
-    @Environment(\.presentationMode) var presentationMode
+    @Binding var navPath: NavigationPath
+    @EnvironmentObject var authManager: AuthManager
     @State private var biometricLogin = true
     @State private var showPersonalInfo = false
     
@@ -32,7 +33,7 @@ struct ProfileView: View {
                 VStack {
                     HStack {
                         Button(action: {
-                            presentationMode.wrappedValue.dismiss()
+                            navPath.removeLast()
                         }) {
                             HStack {
                                 Image(systemName: "arrow.left")
@@ -263,8 +264,3 @@ struct User {
     let memberSince: String
 }
 
-struct ProfileView_Previews: PreviewProvider {
-    static var previews: some View {
-        ProfileView()
-    }
-}
