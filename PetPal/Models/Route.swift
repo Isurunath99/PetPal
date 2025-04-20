@@ -5,6 +5,8 @@
 //  Created by sasiri rukshan nanayakkara on 3/31/25.
 //
 
+import SwiftUI
+
 enum Route: Hashable {
     case home
     case profile
@@ -14,4 +16,6 @@ enum Route: Hashable {
     case shop
     case discover
     case reminder
+    case pet(id: String)
+    case addPet
 }

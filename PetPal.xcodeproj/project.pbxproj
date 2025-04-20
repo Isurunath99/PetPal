@@ -40,9 +40,22 @@
 		AFC10F4D2D99157800E217F2 /* PetPalUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PetPalUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		AF246C7B2DB4AD7E00FAF51F /* Exceptions for "PetPal" folder in "PetPal" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Views/Untitled.swift,
+			);
+			target = AFC10F322D99157600E217F2 /* PetPal */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		AFC10F352D99157600E217F2 /* PetPal */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				AF246C7B2DB4AD7E00FAF51F /* Exceptions for "PetPal" folder in "PetPal" target */,
+			);
 			path = PetPal;
 			sourceTree = "<group>";
 		};

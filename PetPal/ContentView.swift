@@ -49,7 +49,7 @@ struct ContentView: View {
         NavigationStack(path: $navPath) {
             ZStack(alignment: .bottom) {
                 TabView(selection: $selectedTab) {
-                    HomeView(navPath: $navPath)
+                    DashboardView(navPath: $navPath)
                         .tag(0)
                     
                     ShopView(navPath: $navPath)
@@ -67,7 +67,9 @@ struct ContentView: View {
                 .edgesIgnoringSafeArea(.bottom)
                 
                 CustomTabBar(selectedTab: $selectedTab)
+                       .frame(maxWidth: .infinity)
             }
+            .edgesIgnoringSafeArea(.bottom)
             .navigationDestination(for: Route.self) { route in
                 switch route {
                 case .profile:
@@ -75,7 +77,7 @@ struct ContentView: View {
                 case .signIn, .signUp:
                     EmptyView() // Should not navigate to sign in/up when authenticated
                 case .home:
-                    HomeView(navPath: $navPath)
+                    DashboardView(navPath: $navPath)
                 case .shop:
                     ShopView(navPath: $navPath)
                 case .reminder:
@@ -84,6 +86,10 @@ struct ContentView: View {
                     DiscoverView(navPath: $navPath)
                 case .vet:
                     VetView(navPath: $navPath)
+                case .pet(let id):
+                    PetProfileView(petId: id, navPath: $navPath)
+                case .addPet:
+                    AddPetView(navPath: $navPath)
                 }
                 
             }
@@ -93,55 +99,59 @@ struct ContentView: View {
     // Custom tab bar view
     struct CustomTabBar: View {
         @Binding var selectedTab: Int
-        
+
         var body: some View {
             HStack(spacing: 0) {
                 ForEach(0..<5) { index in
                     Button(action: {
                         selectedTab = index
                     }) {
-                        VStack(spacing: 5) {
-                            ZStack {
-                                
-                                Text(getTabName(for: index))
-                                    .font(.system(size: 10))
-                                    .foregroundColor(selectedTab == index ? Color(AppColors.primary) : Color(AppColors.lightBlue))
-                            }
+                        VStack(spacing: 4) {
+                            Image(systemName: getIconName(for: index))
+                                .font(.system(size: 20, weight: .medium))
+                                .foregroundColor(selectedTab == index ? Color(AppColors.primary) : Color(.blue))
+                            
+                            Text(getTabName(for: index))
+                                .font(.system(size: 10))
+                                .foregroundColor(selectedTab == index ? Color(AppColors.primary) : Color(.gray))
                         }
+                        .frame(maxWidth: .infinity)
                     }
-                    .frame(maxWidth: .infinity)
                 }
             }
-            .frame(height: 70)
+            .padding(.horizontal, 10)
+            .padding(.top, 20)
+            .padding(.bottom, 20)
             .background(
-                Color(AppColors.background)
-                    .shadow(color: Color.black.opacity(0.15), radius: 6, x: 0, y: -4)
+                Color(.white)
                     .clipShape(CustomShape())
+                    .shadow(color: Color.black.opacity(0.15), radius: 6, x: 0, y: -2)
             )
         }
-        
+
         func getIconName(for index: Int) -> String {
             switch index {
             case 0: return "house"
             case 1: return "cart"
-            case 2: return "discover"
-            case 4: return "calendar"
-            case 5: return "vet"
+            case 2: return "location.north.circle"
+            case 3: return "calendar"
+            case 4: return "stethoscope"
             default: return "questionmark"
             }
         }
-        
+
         func getTabName(for index: Int) -> String {
             switch index {
             case 0: return "Home"
             case 1: return "Shop"
             case 2: return "Discover"
-            case 4: return "Reminders"
-            case 5: return "Vet"
+            case 3: return "Reminder"
+            case 4: return "Vet"
             default: return ""
             }
         }
     }
+
     
     struct CustomShape: Shape {
         func path(in rect: CGRect) -> Path {

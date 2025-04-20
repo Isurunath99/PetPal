@@ -255,6 +255,13 @@ struct ProfileView: View {
     }
 }
 
+struct ProfileView_Previews: PreviewProvider {
+    static var previews: some View {
+        ProfileView(navPath: .constant(NavigationPath()))
+    }
+}
+
+
 struct User {
     let firstName: String
     let lastName: String
