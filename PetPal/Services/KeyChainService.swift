@@ -1,10 +1,3 @@
-//
-//  KeyChangeService.swift
-//  PetPal
-//
-//  Created by sasiri rukshan nanayakkara on 3/31/25.
-//
-
 import Security
 import Foundation
 
@@ -52,6 +45,11 @@ class KeychainService {
         ]
         
         SecItemDelete(query as CFDictionary)
+    }
+    
+    // Add a method to check if biometrics is enabled for the current user
+    static func isBiometricsEnabled() -> Bool {
+        return getCredentials() != nil
     }
 }
 

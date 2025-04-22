@@ -38,7 +38,9 @@ struct SignUpView: View {
                 VStack {
                     HStack {
                         Button(action: {
-                            navPath.removeLast()
+                            if navPath.count > 0 {
+                                navPath.removeLast()
+                            }
                         }) {
                             HStack {
                                 Image(systemName: "arrow.left")
@@ -216,14 +218,14 @@ struct SignUpView: View {
                         }
                         
                         // Biometric Authentication Option
-                        if biometricType == .faceID {
+                        if biometricType != .none {
                             Button(action: {
                                 enableBiometrics.toggle()
                             }) {
                                 HStack(spacing: 12) {
                                     ZStack {
                                         RoundedRectangle(cornerRadius: 4)
-                                            .stroke(enableBiometrics ? Color.green : Color.gray, lineWidth: 1.5)
+                                            .stroke(enableBiometrics ? Color.blue : Color.gray, lineWidth: 1.5)
                                             .frame(width: 24, height: 24)
                                         
                                         if enableBiometrics {
@@ -280,6 +282,15 @@ struct SignUpView: View {
                         .padding()
                         .background(Color(AppColors.primary))
                         .cornerRadius(8)
+                        .disabled(isLoading)
+                        
+                        // Error message form Firebase
+                        if let errorMsg = authManager.authError {
+                            Text(errorMsg)
+                                .font(.caption)
+                                .foregroundColor(.red)
+                                .padding(.top, 8)
+                        }
                         
                         // Already Have Account
                         HStack {
@@ -288,7 +299,9 @@ struct SignUpView: View {
                             
                             Button(action: {
                                 // Navigate to sign in
-                                navPath.removeLast()
+                                if navPath.count > 0 {
+                                    navPath.removeLast()
+                                }
                             }) {
                                 Text("Sign In")
                                     .fontWeight(.medium)
@@ -308,19 +321,19 @@ struct SignUpView: View {
     }
     
     private func checkBiometricType() {
-        let context = LAContext()
-        var error: NSError?
-        
-        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
-            if context.biometryType == .faceID {
-                biometricType = .faceID
-            } else {
-                biometricType = .none
-            }
-        } else {
-            biometricType = .none
+    let context = LAContext()
+    var error: NSError?
+    
+    if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+        switch context.biometryType {
+        case .faceID: biometricType = .faceID
+        case .touchID: biometricType = .touchID
+        default: biometricType = .none
         }
+    } else {
+        biometricType = .none
     }
+}
     
     private func validateEmail(_ email: String) -> Bool {
         let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
@@ -338,6 +351,33 @@ struct SignUpView: View {
         return phonePredicate.evaluate(with: phoneNumber)
     }
     
+    private func enrollBiometrics() {
+        let context = LAContext()
+        var error: NSError?
+        
+        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+            let reason = "Enable biometric login for your account"
+            
+            context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { success, error in
+                DispatchQueue.main.async {
+                    if success {
+                        print("Biometric enrollment successful")
+                        // We don't need to do anything here - the enableBiometrics flag will be
+                        // passed to the SignUpRequest, and KeychainService.saveCredentials will
+                        // be called in the AuthManager.signUp method
+                    } else {
+                        // Handle error or fallback to password
+                        print("Biometric enrollment failed: \(error?.localizedDescription ?? "Unknown error")")
+                        self.enableBiometrics = false
+                    }
+                }
+            }
+        } else {
+            enableBiometrics = false
+            print("Biometrics not available: \(error?.localizedDescription ?? "Unknown error")")
+        }
+    }
+    
     private func handleSignUp() {
         // Reset errors
         firstNameError = nil
@@ -347,6 +387,11 @@ struct SignUpView: View {
         phoneNumberError = nil
         
         var isValid = true
+        
+        // If user wants biometrics, authenticate first to confirm their identity
+               if enableBiometrics {
+                   enrollBiometrics()
+               }
         
         // Validate first name
         if firstName.isEmpty {
@@ -392,23 +437,23 @@ struct SignUpView: View {
             )
             
             // Call the AuthManager to handle Firebase authentication
-            authManager.signUp(with: signUpRequest) { success, error in
-                isLoading = false
-                
-                if success {
-                    // Navigate back to sign in screen
-                    navPath.removeLast()
-                } else if let error = error {
-                    // Display the appropriate error
-                    if error.contains("email") {
-                        emailError = error
-                    } else if error.contains("password") {
-                        passwordError = error
+            Task {
+                isLoading = true
+                do {
+                    try await authManager.signUp(with: signUpRequest)
+                } catch {
+                    isLoading = false
+                    let errorMessage = error.localizedDescription
+                    if errorMessage.contains("email") {
+                        emailError = errorMessage
+                    } else if errorMessage.contains("password") {
+                        passwordError = errorMessage
                     } else {
-                        authManager.authError = error
+                        authManager.authError = errorMessage
                     }
                 }
             }
+
         }
     }
 }

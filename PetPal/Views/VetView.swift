@@ -25,7 +25,9 @@ struct VetView: View {
                 VStack {
                     HStack {
                         Button(action: {
-                            navPath.removeLast()
+                            if navPath.count > 0 {
+                                navPath.removeLast()
+                            }
                         }) {
                             Image(systemName: "arrow.left")
                                 .foregroundColor(.white)

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSRemindersFullAccessUsageDescription</key>
+	<string>We use your Reminders to alerts and notifications.</string>
+	<key>NSRemindersUsageDescription</key>
+	<string>We use your Reminders to alerts and notifications.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>This app needs to access to your calender to schedule events.</string>
+	<key>NSUserNotificationUsageDescription</key>
+	<string>This app needs local notifications to send alerts and reminders.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app need to your location to show nearby stores and features on the map. </string>
+	<key>NSAppTransportSecurity</key>
+	<dict/>
+	<key>NSAllowsArbitraryLoads</key>
+	<string></string>
+</dict>
+</plist>

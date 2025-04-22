@@ -46,7 +46,7 @@ struct VetItemCardView: View {
                     Text(vet.name)
                         .font(.headline)
                     Text(vet.specialty)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundColor(.gray)
                 }
             }
@@ -56,29 +56,30 @@ struct VetItemCardView: View {
                     .foregroundColor(.gray)
                 Text(vet.hours)
                     .font(.caption)
+                    .bold()
             }
             
             HStack {
                 Image(systemName: "phone.fill")
                     .foregroundColor(.gray)
                 Text(vet.phone)
-                    .font(.caption)
+                    .font(.subheadline)
             }
             
             HStack(alignment: .top) {
                 Image(systemName: "location.fill")
                     .foregroundColor(.gray)
                 HStack {
-                    Link("Link of product", destination: URL(string: vet.location) ?? URL(string: "https://google.com")!)
+                    Link("Link to Pet Clinic", destination: URL(string: vet.location) ?? URL(string: "https://google.com")!)
                         .foregroundColor(.blue)
                         .underline()
-                        .font(.caption)
+                        .font(.subheadline)
                 }
             }
 
         }
         .padding()
-        .frame(width: UIScreen.main.bounds.width * 0.9, alignment: .leading) // 80% width
+        .frame(width: UIScreen.main.bounds.width * 0.72, alignment: .leading) // 80% width
         .background(Color.white)
         .cornerRadius(10)
         .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)

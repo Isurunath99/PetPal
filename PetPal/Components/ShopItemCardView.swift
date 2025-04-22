@@ -86,7 +86,7 @@ struct ShopItemCardView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding()
-        .frame(width: UIScreen.main.bounds.width * 0.9, alignment: .leading)
+        .frame(width: UIScreen.main.bounds.width * 0.72, alignment: .leading)
         .background(Color.white)
         .cornerRadius(10)
         .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)

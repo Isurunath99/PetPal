@@ -26,7 +26,9 @@ struct PetProfileView: View {
                 VStack {
                     HStack {
                         Button(action: {
-                            navPath.removeLast()
+                            if navPath.count > 0 {
+                                navPath.removeLast()
+                            }
                         }) {
                             Image(systemName: "arrow.left")
                                 .foregroundColor(.white)
@@ -219,7 +221,7 @@ struct PetProfileView: View {
           isLoading = true
           errorMessage = nil
           do {
-              guard let userId = authManager.currentUser?.uid else {
+              guard let userId = authManager.currentFirebaseUser?.uid else {
                   fatalError("No user signed in")
               }
               pet = try await FirestoreService.getPetDetailsById(userId: userId, petId: petId)

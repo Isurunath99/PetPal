@@ -6,11 +6,13 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct AddPetView: View {
     @Binding var navPath: NavigationPath
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var authManager: AuthManager
+    @Environment(\.dismiss) private var dismiss
     
     @State private var petName: String = ""
     @State private var breedName: String = ""
@@ -39,7 +41,7 @@ struct AddPetView: View {
                 VStack {
                     HStack {
                         Button(action: {
-                            navPath.removeLast()
+                            dismiss()
                         }) {
                             Image(systemName: "arrow.left")
                                 .foregroundColor(.white)
@@ -271,7 +273,7 @@ struct AddPetView: View {
         
         Task {
             do {
-                guard let userId = authManager.currentUser?.uid else {
+                guard let userId = Auth.auth().currentUser?.uid else {
                     throw NSError(domain: "AddPetView", code: 401, userInfo: [NSLocalizedDescriptionKey: "User not authenticated"])
                 }
                 
@@ -311,7 +313,7 @@ struct AddPetView: View {
         errorMessagePet = nil
         
         do {
-            guard let userId = authManager.currentUser?.uid else {
+            guard let userId = authManager.currentFirebaseUser?.uid else {
                 fatalError("No user signed in")
             }
             pets = try await FirestoreService.getAllPets(userId: userId)

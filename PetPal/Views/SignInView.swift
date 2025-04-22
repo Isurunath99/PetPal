@@ -66,8 +66,7 @@ struct SignInView: View {
                     }
                     .padding(.bottom, 16)
                     .padding(.top, 16)
-                
-                    
+                                    
                     // Form
                     VStack(spacing: 20) {
                         // Email Field
@@ -191,21 +190,16 @@ struct SignInView: View {
                         Button(action: authenticateWithBiometrics) {
                             HStack {
                                 Image(systemName: biometricType == .faceID ? "faceid" : "touchid")
-                                    .foregroundColor(.blue)
+                                    .foregroundColor(.green)
                                     .font(.system(size: 20))
                                 
                                 Text("Sign in with \(biometricType == .faceID ? "Face ID" : "Touch ID")")
                                     .fontWeight(.medium)
-                                    .foregroundColor(.black)
                             }
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color(.white))
+                            .background(Color(.systemGray6))
                             .cornerRadius(10)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(emailError != nil ? Color.red : Color(AppColors.border), lineWidth: 1)
-                            )
                         }
                         .padding(.horizontal)
                         .padding(.bottom, 8)
@@ -259,10 +253,32 @@ struct SignInView: View {
     }
     
     private func checkBiometricsEnabled() {
-        // In a real app, this would check user preferences or keychain
-        // For demo purposes, we'll assume biometrics was enabled during signup
-        biometricsEnabled = true
-    }
+         // Check if biometrics is available on the device
+         let context = LAContext()
+         var error: NSError?
+         
+         if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+             biometricsAvailable = true
+             
+             // Determine the biometric type (Face ID or Touch ID)
+             switch context.biometryType {
+             case .faceID:
+                 biometricType = .faceID
+             case .touchID:
+                 biometricType = .touchID
+             default:
+                 biometricType = .none
+                 biometricsAvailable = false
+             }
+             
+             // Check if the user has stored credentials for biometrics
+             biometricsEnabled = KeychainService.isBiometricsEnabled()
+         } else {
+             biometricType = .none
+             biometricsAvailable = false
+             biometricsEnabled = false
+         }
+     }
     
     private func handleSignIn() {
         // Reset errors
@@ -302,7 +318,6 @@ struct SignInView: View {
                             // Successfully signed in
                             // The auth state listener in AuthManager will update isAuthenticated
                             // and trigger a navigation to the main app
-                            navPath.removeLast()
                         } else if let error = error {
                             // Show error to user
                             if error.contains("email") {
@@ -316,28 +331,17 @@ struct SignInView: View {
     }
     
     private func authenticateWithBiometrics() {
-        let context = LAContext()
-        var error: NSError?
-        
-        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
-            let reason = "Log in to your account"
-            
-            context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { success, error in
-                DispatchQueue.main.async {
-                    if success {
-                        print("Biometric authentication successful")
-                        // Navigate to app home
-                    } else {
-                        // Handle error or fallback to password
-                        print("Authentication failed: \(error?.localizedDescription ?? "Unknown error")")
-                    }
-                }
-            }
-        } else {
-            // Biometrics not available
-            print("Biometrics not available: \(error?.localizedDescription ?? "Unknown error")")
-        }
-    }
+           // Use the AuthManager's biometric authentication
+           authManager.authenticateWithBiometrics { success, error in
+               if success {
+                   // If authentication is successful, navigate to home
+                   navPath.append(Route.home)
+               } else if let error = error {
+                   // Display the error to the user
+                   authManager.authError = error
+               }
+           }
+       }
     
     private func isValidEmail(_ email: String) -> Bool {
         let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"

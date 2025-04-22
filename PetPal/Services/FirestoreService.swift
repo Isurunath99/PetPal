@@ -82,6 +82,21 @@ struct FirestoreService {
     
     private static let db = Firestore.firestore()
     
+    static func saveUserData(uid: String, data: [String: Any]) async throws {
+        try await db.collection("users").document(uid).setData(data)
+    }
+    
+    static func getUserData(uid: String) async throws -> [String: Any] {
+          let db = Firestore.firestore()
+          let document = try await db.collection("users").document(uid).getDocument()
+          
+          guard let data = document.data() else {
+              throw AuthError.notAuthenticated
+          }
+          
+          return data
+      }
+    
     static func getShopItems() async throws -> [ShopItem] {
         let snapshot = try await db.collection("shop").getDocuments()
         
@@ -194,5 +209,89 @@ struct FirestoreService {
         
         return newPet
     }
+    
+    static func saveReminder(userId: String, reminder: PetReminder) async throws {
+          var data = reminder.dictionary
+          
+          // If no ID exists, create one
+          let reminderId = reminder.id ?? UUID().uuidString
+          
+          try await db.collection("users")
+              .document(userId)
+              .collection("reminders")
+              .document(reminderId)
+              .setData(data)
+      }
+      
+      static func getAllReminders(userId: String) async throws -> [PetReminder] {
+          let snapshot = try await db.collection("users")
+              .document(userId)
+              .collection("reminders")
+              .order(by: "date")
+              .getDocuments()
+          
+          return snapshot.documents.compactMap { document in
+              try? document.data(as: PetReminder.self)
+          }
+      }
+    
+    static func getNearestUpcomingReminders(userId: String) async throws -> [PetReminder] {
+        let now = Date()
+        
+        // Calculate date one week from now
+        let oneWeekFromNow = Calendar.current.date(byAdding: .day, value: 7, to: now) ?? Date()
+        
+        // Without requiring a composite index (simpler query)
+        let snapshot = try await db.collection("users")
+            .document(userId)
+            .collection("reminders")
+            .order(by: "date")
+            .getDocuments()
+        
+        // Filter in memory to get upcoming reminders for the next week
+        return snapshot.documents.compactMap { document in
+            guard let reminder = try? document.data(as: PetReminder.self) else {
+                return nil
+            }
+            
+            // Only return non-completed reminders for the next week
+            if reminder.date > now && reminder.date <= oneWeekFromNow && !reminder.isCompleted {
+                return reminder
+            }
+            return nil
+        }
+    }
+      
+      static func getUpcomingReminders(userId: String) async throws -> [PetReminder] {
+          let now = Date()
+          
+          let snapshot = try await db.collection("users")
+              .document(userId)
+              .collection("reminders")
+              .whereField("date", isGreaterThan: now)
+              .whereField("isCompleted", isEqualTo: false)
+              .order(by: "date")
+              .getDocuments()
+          
+          return snapshot.documents.compactMap { document in
+              try? document.data(as: PetReminder.self)
+          }
+      }
+      
+      static func deleteReminder(userId: String, reminderId: String) async throws {
+          try await db.collection("users")
+              .document(userId)
+              .collection("reminders")
+              .document(reminderId)
+              .delete()
+      }
+      
+      static func markReminderComplete(userId: String, reminderId: String, isCompleted: Bool) async throws {
+          try await db.collection("users")
+              .document(userId)
+              .collection("reminders")
+              .document(reminderId)
+              .updateData(["isCompleted": isCompleted])
+      }
 
 }

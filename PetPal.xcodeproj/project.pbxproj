@@ -41,10 +41,10 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		AF246C7B2DB4AD7E00FAF51F /* Exceptions for "PetPal" folder in "PetPal" target */ = {
+		AF246DFE2DB682A100FAF51F /* Exceptions for "PetPal" folder in "PetPal" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Views/Untitled.swift,
+				Info.plist,
 			);
 			target = AFC10F322D99157600E217F2 /* PetPal */;
 		};
@@ -54,7 +54,7 @@
 		AFC10F352D99157600E217F2 /* PetPal */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				AF246C7B2DB4AD7E00FAF51F /* Exceptions for "PetPal" folder in "PetPal" target */,
+				AF246DFE2DB682A100FAF51F /* Exceptions for "PetPal" folder in "PetPal" target */,
 			);
 			path = PetPal;
 			sourceTree = "<group>";
@@ -451,6 +451,7 @@
 				DEVELOPMENT_TEAM = SRPACPFAKQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PetPal/Info.plist;
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "We use Face ID to allow you to securely sign in to your account.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -481,6 +482,7 @@
 				DEVELOPMENT_TEAM = SRPACPFAKQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PetPal/Info.plist;
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "We use Face ID to allow you to securely sign in to your account.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

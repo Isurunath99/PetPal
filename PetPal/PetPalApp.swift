@@ -15,7 +15,7 @@ class AppState: ObservableObject {
 
 // Setup Firebase main App struct
 @main
-struct GroceryAssistantApp: App {
+struct PetPalApp: App {
     @StateObject private var authManager = AuthManager()
     @StateObject private var appState = AppState()
     

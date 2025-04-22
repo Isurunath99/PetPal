@@ -4,15 +4,9 @@
 //
 //  Created by sasiri rukshan nanayakkara on 3/31/25.
 //
-
 import SwiftUI
 
 struct DashboardView: View {
-    
-    let reminders = [
-        Reminder(date: Date(timeIntervalSinceNow: 60*60*24*2), time: Date(), pet: "Snowy", task: "Get Rabies Vaccine"),
-        Reminder(date: Date(timeIntervalSinceNow: 60*60*24*4), time: Date(), pet: "Shadow", task: "Take to the dermatologist")
-    ]
     
     @EnvironmentObject var authManager: AuthManager
     @Binding var navPath: NavigationPath
@@ -28,157 +22,194 @@ struct DashboardView: View {
     @State private var pets: [Pet] = []
     @State private var isLoadingPets = false
     @State private var errorMessagePet: String?
+    
+    @State private var reminders: [PetReminder] = []
+    @State private var isLoadingReminders = false
+    @State private var errorMessageReminders: String?
 
     var body: some View {
-                VStack(spacing: 0) {
-                    // Header
-                    ZStack {
-                        Color(AppColors.primary)
-                            .ignoresSafeArea()
-                        ZStack {
-                            Color(AppColors.primary)
-                                .ignoresSafeArea()
-                            HStack {
-                                Text("Hey Isuru,")
-                                    .font(.title)
-                                    .foregroundColor(.white)
-                                    .bold()
-                                Spacer()
-                                Image(systemName: "bell.fill")
-                                    .font(.title2)
-                                    .foregroundColor(.white)
-                                Image(systemName: "person.fill")
-                                    .font(.title2)
-                                    .foregroundColor(.white)
-                                    .padding(.leading, 8)
-                            }
-                        }
-                        .padding(.top, 10)
-                        .padding(.bottom, 10)
-                        .padding(.horizontal, 16)
-                    }
-                    .frame(height: 60)
-
-                    
-                    ScrollView {
-
-                    // Pets Section
-                    VStack(alignment: .leading, spacing: 12) {
-                        SectionHeader(title: "My Pets", actionText: "+ Add pet") {
-                            navPath.append(Route.addPet)
-                        }
-
+        VStack(spacing: 0) {
+            // Header
+            ZStack {
+                Color(AppColors.primary)
+                    .ignoresSafeArea()
+                ZStack {
+                    Color(AppColors.primary)
+                        .ignoresSafeArea()
+                    HStack {
+                        Text("Hey Isuru,")
+                            .font(.title)
+                            .foregroundColor(.white)
+                            .bold()
                         
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 16) {
-                                if isLoadingPets {
-                                    ProgressView()
-                                        .padding()
-                                } else if let errorMessagePet = errorMessagePet {
-                                    Text(errorMessagePet)
-                                        .foregroundColor(.red)
-                                        .padding()
-                                } else if pets.isEmpty {
-                                    Text("No pets available")
-                                        .foregroundColor(.gray)
-                                        .padding()
-                                } else {
-                                    ForEach(pets) { pet in
-                                        Button(action: {
-                                            navPath.append(Route.pet(id: pet.id))
-                                        }) {
-                                            PetItemCardView(pet: pet)
-                                        }
-                                        .buttonStyle(PlainButtonStyle()) // Removes default button look
-                                    }
-                                }
-                            }
-                            .padding(.horizontal)
-                        }
-                    }
-                    .padding(.bottom, 20)
-                    
-                    // Reminders Section
-                    VStack(alignment: .leading, spacing: 12) {
-                        SectionHeader(title: "Upcoming Reminders", actionText: "+ Add reminder")
+                        Spacer()
                         
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 16) {
-                                ForEach(reminders) { reminder in
-                                    ReminderItemCardView(reminder: reminder)
-                                }
-                            }
-                            .padding(.horizontal)
+                        Button(action: {
+                            navPath.append(Route.reminder)
+                        }) {
+                            Image(systemName: "bell.fill")
+                                .font(.title2)
+                                .foregroundColor(.white)
                         }
-                    }
-                    .padding(.bottom, 20)
-                    
-                    // Vets Section
-                    VStack(alignment: .leading, spacing: 12) {
-                        SectionHeader(title: "Vets", actionText: "+ Add vet")
                         
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 16) {
-                                if isLoadingvets {
-                                    ProgressView()
-                                        .padding()
-                                } else if let errorMessageVet = errorMessageVet {
-                                    Text(errorMessageVet)
-                                        .foregroundColor(.red)
-                                        .padding()
-                                } else if vets.isEmpty {
-                                    Text("No Vets Found")
-                                        .foregroundColor(.gray)
-                                        .padding()
-                                } else {
-                                    ForEach(vets) { item in
-                                        VetItemCardView(vet: item)
-                                    }
-                                }
-                            }
-                            .padding(.horizontal)
-                        }
-
-                    }
-                    .padding(.bottom, 20)
-                    
-                    // Shop Section
-                    VStack(alignment: .leading, spacing: 12) {
-                        SectionHeader(title: "Shop", actionText: "+ Add item")
-                        
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 16) {
-                                if isLoadingShopItems {
-                                    ProgressView()
-                                        .padding()
-                                } else if let errorMessageShopItem = errorMessageShopItem {
-                                    Text(errorMessageShopItem)
-                                        .foregroundColor(.red)
-                                        .padding()
-                                } else if shopItems.isEmpty {
-                                    Text("No shop items available")
-                                        .foregroundColor(.gray)
-                                        .padding()
-                                } else {
-                                    ForEach(shopItems) { item in
-                                        ShopItemCardView(item: item)
-                                    }
-                                }
-                            }
-                            .padding(.horizontal)
+                        Button(action: {
+                            navPath.append(Route.profile)
+                        }) {
+                            Image(systemName: "person.fill")
+                                .font(.title2)
+                                .foregroundColor(.white)
+                                .padding(.leading, 8)
                         }
                     }
-                    .padding(.bottom, 20)
                 }
-                .padding(.top, 20)
+                .padding(.top, 10)
+                .padding(.bottom, 10)
+                .padding(.horizontal, 16)
             }
-            .background(Color(UIColor.systemGroupedBackground))
-            .task {
-                await loadShopItems()
-                await loadVets()
-                await loadPets()
+            .frame(height: 60)
+            
+            
+            ScrollView {
+                
+                // Pets Section
+                VStack(alignment: .leading, spacing: 12) {
+                    SectionHeader(title: "My Pets", actionText: "+ Add pet") {
+                        navPath.append(Route.addPet)
+                    }
+                    
+                    
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 16) {
+                            if isLoadingPets {
+                                ProgressView()
+                                    .padding()
+                            } else if let errorMessagePet = errorMessagePet {
+                                Text(errorMessagePet)
+                                    .foregroundColor(.red)
+                                    .padding()
+                            } else if pets.isEmpty {
+                                Text("No pets available")
+                                    .foregroundColor(.gray)
+                                    .padding()
+                            } else {
+                                ForEach(pets) { pet in
+                                    Button(action: {
+                                        navPath.append(Route.pet(id: pet.id))
+                                    }) {
+                                        PetItemCardView(pet: pet)
+                                    }
+                                    .buttonStyle(PlainButtonStyle()) // Removes default button look
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                }
+                .padding(.bottom, 20)
+                
+                // Reminders Section
+                VStack(alignment: .leading, spacing: 12) {
+                    SectionHeader(title: "Upcoming Reminders", actionText: "View Reminders")  {
+                        navPath.append(Route.reminder)
+                    }
+                    
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 16) {
+                            if isLoadingReminders {
+                                ProgressView()
+                                    .padding()
+                            } else if let errorMessageReminders = errorMessageReminders {
+                                Text(errorMessageReminders)
+                                    .foregroundColor(.red)
+                                    .padding()
+                            } else if reminders.isEmpty {
+                                Text("No upcoming reminders")
+                                    .foregroundColor(.gray)
+                                    .padding()
+                            } else {
+                                ForEach(reminders) { reminder in
+                                    PetReminderCardView(reminder: reminder)
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                }
+                .padding(.bottom, 20)
+                
+                // Vets Section
+                VStack(alignment: .leading, spacing: 12) {
+                    SectionHeader(title: "Vets", actionText: " View Vets")  {
+                        navPath.append(Route.vet)
+                    }
+                    
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 16) {
+                            if isLoadingvets {
+                                ProgressView()
+                                    .padding()
+                            } else if let errorMessageVet = errorMessageVet {
+                                Text(errorMessageVet)
+                                    .foregroundColor(.red)
+                                    .padding()
+                            } else if vets.isEmpty {
+                                Text("No Vets Found")
+                                    .foregroundColor(.gray)
+                                    .padding()
+                            } else {
+                                ForEach(vets) { item in
+                                    VetItemCardView(vet: item)
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                    
+                }
+                .padding(.bottom, 20)
+                
+                // Shop Section
+                VStack(alignment: .leading, spacing: 12) {
+                    SectionHeader(title: "Shop", actionText: " View Shop")  {
+                        navPath.append(Route.shop)
+                    }
+                    
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 16) {
+                            if isLoadingShopItems {
+                                ProgressView()
+                                    .padding()
+                            } else if let errorMessageShopItem = errorMessageShopItem {
+                                Text(errorMessageShopItem)
+                                    .foregroundColor(.red)
+                                    .padding()
+                            } else if shopItems.isEmpty {
+                                Text("No shop items available")
+                                    .foregroundColor(.gray)
+                                    .padding()
+                            } else {
+                                ForEach(shopItems) { item in
+                                    ShopItemCardView(item: item)
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                }
+                .padding(.bottom, 20)
             }
+            .padding(.top, 20)
         }
+        .background(Color(UIColor.systemGroupedBackground))
+        .navigationBarHidden(true)
+        .task {
+            await loadShopItems()
+            await loadVets()
+            await loadPets()
+            await loadReminders()
+        }
+        
+     }
     
     struct SectionHeader: View {
         let title: String
@@ -245,9 +276,12 @@ struct DashboardView: View {
         errorMessagePet = nil
         
         do {
-            guard let userId = authManager.currentUser?.uid else {
-                fatalError("No user signed in")
+            guard let userId = authManager.currentFirebaseUser?.uid else {
+                errorMessagePet = "User not signed in."
+                isLoadingPets = false
+                return
             }
+
             pets = try await FirestoreService.getAllPets(userId: userId)
         } catch {
             errorMessagePet = "Failed to load pets: \(error.localizedDescription)"
@@ -255,6 +289,26 @@ struct DashboardView: View {
         }
         
         isLoadingPets = false
+    }
+    
+    private func loadReminders() async {
+        isLoadingReminders = true
+        errorMessageReminders = nil
+        
+        do {
+            guard let userId = authManager.currentFirebaseUser?.uid else {
+                errorMessageReminders = "User not signed in."
+                isLoadingReminders = false
+                return
+            }
+            
+            reminders = try await FirestoreService.getNearestUpcomingReminders(userId: userId)
+        } catch {
+            errorMessageReminders = "Failed to load reminders: \(error.localizedDescription)"
+            print("Error loading reminders: \(error)")
+        }
+        
+        isLoadingReminders = false
     }
         
 }

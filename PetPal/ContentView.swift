@@ -58,7 +58,7 @@ struct ContentView: View {
                     DiscoverView(navPath: $navPath)
                         .tag(2)
                     
-                    ReminderView(navPath: $navPath)
+                    ReminderListView(navPath: $navPath)
                         .tag(3)
                     
                     VetView(navPath: $navPath)
@@ -81,7 +81,9 @@ struct ContentView: View {
                 case .shop:
                     ShopView(navPath: $navPath)
                 case .reminder:
-                    ReminderView(navPath: $navPath)
+                    ReminderListView(navPath: $navPath)
+//                case .addReminder:
+//                    AddReminderView(navPath: $navPath)
                 case .discover:
                     DiscoverView(navPath: $navPath)
                 case .vet:
