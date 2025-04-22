@@ -406,6 +406,7 @@ class SimpleWeatherManager: ObservableObject {
 // Updated Main Discover View
 struct DiscoverView: View {
     @Binding var navPath: NavigationPath
+    @Binding var selectedTab: Int
     @StateObject private var viewModel = LocationViewModel()
     @StateObject private var locationManager = LocationManager()
     @StateObject private var weatherManager = SimpleWeatherManager()
@@ -422,7 +423,7 @@ struct DiscoverView: View {
                 Color.blue.ignoresSafeArea(edges: .top)
                 HStack {
                     Button(action: {
-                        navPath.removeLast()
+                        selectedTab = 0
                     }) {
                         Image(systemName: "arrow.left")
                             .foregroundColor(.white)

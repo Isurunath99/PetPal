@@ -11,7 +11,8 @@ import SwiftUI
 struct VetView: View {
     @EnvironmentObject var authManager: AuthManager
     @Binding var navPath: NavigationPath
-    
+    @Binding var selectedTab: Int
+
     @State private var vets: [Vet] = []
     @State private var isLoading = false
     @State private var errorMessage: String?
@@ -25,9 +26,7 @@ struct VetView: View {
                 VStack {
                     HStack {
                         Button(action: {
-                            if navPath.count > 0 {
-                                navPath.removeLast()
-                            }
+                            selectedTab = 0
                         }) {
                             Image(systemName: "arrow.left")
                                 .foregroundColor(.white)
@@ -94,11 +93,5 @@ struct VetView: View {
         }
         
         isLoading = false
-    }
-}
-
-struct VetView_Previews: PreviewProvider {
-    static var previews: some View {
-        VetView(navPath: .constant(NavigationPath()))
     }
 }

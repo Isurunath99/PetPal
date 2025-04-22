@@ -5,6 +5,7 @@
 //  Created by sasiri rukshan nanayakkara on 3/30/25.
 //
 
+
 import SwiftUI
 import Firebase
 
@@ -18,6 +19,7 @@ class AppState: ObservableObject {
 struct PetPalApp: App {
     @StateObject private var authManager = AuthManager()
     @StateObject private var appState = AppState()
+    @State private var selectedTab = 0
     
     init() {
         setupFirebase()
@@ -25,7 +27,7 @@ struct PetPalApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(selectedTab: $selectedTab)
                 .environmentObject(authManager)
                 .environmentObject(appState)
         }

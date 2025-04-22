@@ -12,6 +12,7 @@ struct SignInView: View {
     @Binding var navPath: NavigationPath
     @State private var isLoading: Bool = false
     @EnvironmentObject var authManager: AuthManager
+    @Binding var selectedTab: Int
     
     @State private var email: String = ""
     @State private var password: String = ""
@@ -335,7 +336,7 @@ struct SignInView: View {
            authManager.authenticateWithBiometrics { success, error in
                if success {
                    // If authentication is successful, navigate to home
-                   navPath.append(Route.home)
+                  selectedTab  = 0
                } else if let error = error {
                    // Display the error to the user
                    authManager.authError = error
@@ -349,10 +350,3 @@ struct SignInView: View {
         return emailPredicate.evaluate(with: email)
     }
 }
-
-struct SignInView_Previews: PreviewProvider {
-    static var previews: some View {
-        SignInView(navPath: .constant(NavigationPath()))
-    }
-}
-

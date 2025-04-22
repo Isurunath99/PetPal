@@ -10,6 +10,7 @@ import SwiftUI
 struct ShopView: View {
     @EnvironmentObject var authManager: AuthManager
     @Binding var navPath: NavigationPath
+    @Binding var selectedTab: Int
     
     @State private var shopItems: [ShopItem] = []
     @State private var isLoading = false
@@ -24,9 +25,7 @@ struct ShopView: View {
                 VStack {
                     HStack {
                         Button(action: {
-                            if navPath.count > 0 {
-                                navPath.removeLast()
-                            }
+                            selectedTab = 0
                         }) {
                             Image(systemName: "arrow.left")
                                 .foregroundColor(.white)
@@ -96,8 +95,3 @@ struct ShopView: View {
     }
 }
 
-struct ShopView_Previews: PreviewProvider {
-    static var previews: some View {
-        ShopView(navPath: .constant(NavigationPath()))
-    }
-}

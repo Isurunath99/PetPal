@@ -26,6 +26,7 @@ struct DashboardView: View {
     @State private var reminders: [PetReminder] = []
     @State private var isLoadingReminders = false
     @State private var errorMessageReminders: String?
+    @Binding var selectedTab: Int
 
     var body: some View {
         VStack(spacing: 0) {
@@ -45,7 +46,7 @@ struct DashboardView: View {
                         Spacer()
                         
                         Button(action: {
-                            navPath.append(Route.reminder)
+                            selectedTab = 3
                         }) {
                             Image(systemName: "bell.fill")
                                 .font(.title2)
@@ -110,7 +111,7 @@ struct DashboardView: View {
                 // Reminders Section
                 VStack(alignment: .leading, spacing: 12) {
                     SectionHeader(title: "Upcoming Reminders", actionText: "View Reminders")  {
-                        navPath.append(Route.reminder)
+                        selectedTab == 3
                     }
                     
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -140,7 +141,7 @@ struct DashboardView: View {
                 // Vets Section
                 VStack(alignment: .leading, spacing: 12) {
                     SectionHeader(title: "Vets", actionText: " View Vets")  {
-                        navPath.append(Route.vet)
+                        selectedTab = 4
                     }
                     
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -171,7 +172,7 @@ struct DashboardView: View {
                 // Shop Section
                 VStack(alignment: .leading, spacing: 12) {
                     SectionHeader(title: "Shop", actionText: " View Shop")  {
-                        navPath.append(Route.shop)
+                        selectedTab = 1
                     }
                     
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -311,10 +312,4 @@ struct DashboardView: View {
         isLoadingReminders = false
     }
         
-}
-
-struct DashboardView_Previews: PreviewProvider {
-    static var previews: some View {
-        DashboardView(navPath: .constant(NavigationPath()))
-    }
 }
