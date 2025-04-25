@@ -9,7 +9,7 @@ struct Location: Identifiable {
     let address: String
     let coordinates: CLLocationCoordinate2D
     let type: LocationType
-    let distance: Double? // Distance from user in kilometers
+    let distance: Double?
 }
 
 enum LocationType: String {
@@ -336,72 +336,6 @@ struct FeatureCard: View {
     }
 }
 
-// Simplified WeatherManager for testing
-class SimpleWeatherManager: ObservableObject {
-    @Published var forecasts: [DayForecast] = []
-    @Published var isLoading: Bool = true
-    
-    init() {
-        // Load sample data and simulate loading
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            self.loadSampleForecasts()
-            self.isLoading = false
-        }
-    }
-    
-    private func loadSampleForecasts() {
-        let today = Date()
-        let calendar = Calendar.current
-        
-        forecasts = [
-            DayForecast(
-                date: today,
-                dayName: "Today",
-                temperature: "30°",
-                high: "32°",
-                low: "24°",
-                condition: "Sunny",
-                conditionIcon: "sun.max.fill"
-            ),
-            DayForecast(
-                date: calendar.date(byAdding: .day, value: 1, to: today)!,
-                dayName: "Tomorrow",
-                temperature: "28°",
-                high: "30°",
-                low: "23°",
-                condition: "Partly Cloudy",
-                conditionIcon: "cloud.sun.fill"
-            ),
-            DayForecast(
-                date: calendar.date(byAdding: .day, value: 2, to: today)!,
-                dayName: "Wed",
-                temperature: "25°",
-                high: "27°",
-                low: "22°",
-                condition: "Light Rain",
-                conditionIcon: "cloud.rain.fill"
-            ),
-            DayForecast(
-                date: calendar.date(byAdding: .day, value: 3, to: today)!,
-                dayName: "Thu",
-                temperature: "24°",
-                high: "26°",
-                low: "21°",
-                condition: "Heavy Rain",
-                conditionIcon: "cloud.heavyrain.fill"
-            ),
-            DayForecast(
-                date: calendar.date(byAdding: .day, value: 4, to: today)!,
-                dayName: "Fri",
-                temperature: "29°",
-                high: "31°",
-                low: "24°",
-                condition: "Sunny",
-                conditionIcon: "sun.max.fill"
-            )
-        ]
-    }
-}
 
 // Updated Main Discover View
 struct DiscoverView: View {
@@ -409,7 +343,7 @@ struct DiscoverView: View {
     @Binding var selectedTab: Int
     @StateObject private var viewModel = LocationViewModel()
     @StateObject private var locationManager = LocationManager()
-    @StateObject private var weatherManager = SimpleWeatherManager()
+    @StateObject private var weatherManager = WeatherManager()
     @State private var region = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 7.8731, longitude: 80.7718),
         span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
@@ -518,7 +452,7 @@ struct DiscoverView: View {
                     
                     // Map section with increased height
                     VStack(alignment: .leading) {
-                        Text("Nearby Veterinarian Clinics")
+                        Text("Nearby Locations")
                             .font(.headline)
                             .padding(.horizontal)
                         

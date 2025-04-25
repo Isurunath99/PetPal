@@ -111,7 +111,7 @@ struct DashboardView: View {
                 // Reminders Section
                 VStack(alignment: .leading, spacing: 12) {
                     SectionHeader(title: "Upcoming Reminders", actionText: "View Reminders")  {
-                        selectedTab == 3
+                        selectedTab = 3
                     }
                     
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -215,7 +215,7 @@ struct DashboardView: View {
     struct SectionHeader: View {
         let title: String
         let actionText: String
-        var onActionTap: (() -> Void)? = nil // Action handler when button is tapped
+        var onActionTap: (() -> Void)? = nil
 
         var body: some View {
             HStack {
@@ -244,6 +244,7 @@ struct DashboardView: View {
         }
     }
     
+    //load all shop items
     private func loadShopItems() async {
         isLoadingShopItems = true
         errorMessageShopItem = nil
@@ -258,6 +259,7 @@ struct DashboardView: View {
         isLoadingShopItems = false
     }
     
+    //load all vets
     private func loadVets() async {
         isLoadingvets = true
         errorMessageVet = nil
@@ -272,6 +274,7 @@ struct DashboardView: View {
         isLoadingvets = false
     }
     
+    //load all pets for the currently logged in user
     private func loadPets() async {
         isLoadingPets = true
         errorMessagePet = nil
@@ -292,6 +295,7 @@ struct DashboardView: View {
         isLoadingPets = false
     }
     
+    //load all reminders for the currently logged in user
     private func loadReminders() async {
         isLoadingReminders = true
         errorMessageReminders = nil
